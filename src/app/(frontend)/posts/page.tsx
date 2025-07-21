@@ -25,6 +25,7 @@ export default async function Page() {
       categories: true,
       meta: true,
     },
+    sort: '-publishDate', // Sort by publishDate descending (most recent first)
   })
 
   return (
