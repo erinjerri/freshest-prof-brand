@@ -24,9 +24,25 @@ export default async function Page() {
       slug: true,
       categories: true,
       meta: true,
+      publishedAt: true, // Make sure to select publishedAt
     },
-    sort: '-publishDate', // Sort by publishDate descending (most recent first)
+    sort: '-publishedAt', // Sort by most recent
   })
+
+  // Fallback: Sort on frontend if needed
+  const sortedDocs = [...posts.docs].sort((a, b) => {
+    if (!a.publishedAt && !b.publishedAt) return 0
+    if (!a.publishedAt) return 1
+    if (!b.publishedAt) return -1
+    return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+  })
+
+  console.log(
+    sortedDocs.map((p) => ({
+      title: p.title,
+      publishedAt: p.publishedAt,
+    })),
+  )
 
   return (
     <div className="pt-24 pb-24">
@@ -46,7 +62,7 @@ export default async function Page() {
         />
       </div>
 
-      <CollectionArchive posts={posts.docs} />
+      <CollectionArchive posts={sortedDocs} />
 
       <div className="container">
         {posts.totalPages > 1 && posts.page && (
