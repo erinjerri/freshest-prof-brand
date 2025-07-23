@@ -23,7 +23,7 @@ export const Logo = (props: Props) => {
       fetchPriority={priority}
       decoding="async"
       className={clsx('max-w-[9.375rem] w-full h-[34px]', className)}
-      src="http://raw.githubusercontent.com/erinjerri/freshest-prof-brand/main/public/favicon.ico"
+      src="http://raw.githubusercontent.com/erinjerri/freshest-prof-brand/main/public/favicon.svg"
     />
   )
 }
