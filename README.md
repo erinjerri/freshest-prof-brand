@@ -12,7 +12,7 @@ This template is right for you if you are working on:
 
 Core features:
 
-- [Payload Website Template](#payload-website-template)
+- [Erin Jerri's Website](#erin-jerris-website)
   - [Quick Start](#quick-start)
     - [Clone](#clone)
       - [Method 1 (recommended)](#method-1-recommended)
