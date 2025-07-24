@@ -1,4 +1,4 @@
-# Payload Website Template
+# Erin Jerri's Website
 
 This is the official Erin Pangilinan's Professional Brand Website utilitizing PayloadCMS, NextJS, ReactJS, TailwindCSS in 2025.
 
