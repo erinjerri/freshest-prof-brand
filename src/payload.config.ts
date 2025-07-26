@@ -79,16 +79,24 @@ export default buildConfig({
       collections: {
         [Media.slug]: {
           clientUploads: true, // Enable client-side uploads for Vercel
+          // Optional: Add a 'prefix' here if your files are stored in a subfolder within your S3 bucket.
+          // For example, if your files are in 'my-bucket/uploads/media/', you'd use:
+          // prefix: 'uploads/media',
+          // If files are directly in the bucket root (e.g., 'my-bucket/image.jpg'), you don't need a prefix.
         },
       },
       bucket: process.env.S3_BUCKET as string,
       config: {
-        endpoint: `https://${process.env.SUPABASE_PROJECT_ID}.supabase.co/storage/v1/s3`,
-        region: process.env.S3_REGION || 'us-west-1',
+        // This is the corrected line to use your full S3_ENDPOINT from .env
+        endpoint: process.env.S3_ENDPOINT as string,
+        // Ensure this region matches your Supabase project's region
+        region: process.env.S3_REGION || 'us-west-1', // Default to us-west-1 if not specified
         credentials: {
           accessKeyId: process.env.S3_ACCESS_KEY_ID as string,
           secretAccessKey: process.env.S3_SECRET_ACCESS_KEY as string,
         },
+        // IMPORTANT for Supabase Storage to work correctly (path-style addressing):
+        forcePathStyle: true,
       },
     }),
   ],

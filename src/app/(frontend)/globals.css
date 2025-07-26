@@ -5,9 +5,9 @@
 /* Add Satoshi font-face */
 @font-face {
   font-family: 'Satoshi';
-  src: url('/fonts/Satoshi/Satoshi-Variable.woff2') format('woff2'),
-       url('/fonts/Satoshi/Satoshi-Variable.woff') format('woff');
+  src: url('/fonts/Satoshi-Variable.ttf') format('truetype');
   font-weight: 100 900;
+  font-style: normal;
   font-display: swap;
 }
 
