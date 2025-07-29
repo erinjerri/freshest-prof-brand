@@ -51,7 +51,7 @@ export default buildConfig({
 
   db: postgresAdapter({
     pool: {
-      connectionString: process.env.DATABASE_URI || '',
+      connectionString: process.env.DATABASE_URL || '', // Updated from DATABASE_URI to DATABASE_URL
     },
   }),
 
@@ -79,23 +79,21 @@ export default buildConfig({
       collections: {
         [Media.slug]: {
           clientUploads: true, // Enable client-side uploads for Vercel
-          // Optional: Add a 'prefix' here if your files are stored in a subfolder within your S3 bucket.
-          // For example, if your files are in 'my-bucket/uploads/media/', you'd use:
-          // prefix: 'uploads/media',
-          // If files are directly in the bucket root (e.g., 'my-bucket/image.jpg'), you don't need a prefix.
+          // Optional: Add a 'prefix' if files are in a subfolder (e.g., 'uploads/media')
+          // prefix: 'uploads/media', // Uncomment and adjust if needed
         },
       },
       bucket: process.env.S3_BUCKET as string,
       config: {
-        // This is the corrected line to use your full S3_ENDPOINT from .env
+        // Supabase Storage endpoint (e.g., https://<project-id>.supabase.co/storage/v1)
         endpoint: process.env.S3_ENDPOINT as string,
-        // Ensure this region matches your Supabase project's region
+        // Match Supabase project region
         region: process.env.S3_REGION || 'us-west-1', // Default to us-west-1 if not specified
         credentials: {
           accessKeyId: process.env.S3_ACCESS_KEY_ID as string,
           secretAccessKey: process.env.S3_SECRET_ACCESS_KEY as string,
         },
-        // IMPORTANT for Supabase Storage to work correctly (path-style addressing):
+        // Required for Supabase Storage
         forcePathStyle: true,
       },
     }),
