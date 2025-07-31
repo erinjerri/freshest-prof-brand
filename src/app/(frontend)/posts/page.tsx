@@ -1,19 +1,19 @@
-import type { Metadata } from 'next/types';
+import type { Metadata } from 'next/types'
 
-import { CollectionArchive } from '@/components/CollectionArchive';
-import { PageRange } from '@/components/PageRange';
-import { Pagination } from '@/components/Pagination';
-import configPromise from '@payload-config';
-import { getPayload } from 'payload';
-import React from 'react';
-import PageClient from './page.client';
-import { mapPostToCard } from '@utils/mapPostToCard'; // Updated import path
-
-export const dynamic = 'force-static';
-export const revalidate = 600;
+import { CollectionArchive } from '@/components/CollectionArchive'
+import { PageRange } from '@/components/PageRange'
+import { Pagination } from '@/components/Pagination'
+import configPromise from '@payload-config'
+import { getPayload } from 'payload'
+import React from 'react'
+import PageClient from './page.client'
+import { mapPostToCard } from '@utils/mapPostToCard' // Updated import path
+import type { CardPostData } from '@/custom-payload-types'
+export const dynamic = 'force-static'
+export const revalidate = 600
 
 export default async function Page() {
-  const payload = await getPayload({ config: configPromise });
+  const payload = await getPayload({ config: configPromise })
 
   const posts = await payload.find({
     collection: 'posts',
@@ -28,25 +28,25 @@ export default async function Page() {
       publishedAt: true, // Make sure to select publishedAt
     },
     sort: '-publishedAt', // Sort by most recent
-  });
+  })
 
   // Fallback: Sort on frontend if needed
   const sortedDocs = [...posts.docs].sort((a, b) => {
-    if (!a.publishedAt && !b.publishedAt) return 0;
-    if (!a.publishedAt) return 1;
-    if (!b.publishedAt) return -1;
-    return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
-  });
+    if (!a.publishedAt && !b.publishedAt) return 0
+    if (!a.publishedAt) return 1
+    if (!b.publishedAt) return -1
+    return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+  })
 
   // Explicitly type the mapped array
-  const cardPosts: CardPostData[] = sortedDocs.map(mapPostToCard);
+  const cardPosts: CardPostData[] = sortedDocs.map(mapPostToCard)
 
   console.log(
     sortedDocs.map((p) => ({
       title: p.title,
       publishedAt: p.publishedAt,
     })),
-  );
+  )
 
   return (
     <div className="pt-24 pb-24">
@@ -74,11 +74,11 @@ export default async function Page() {
         )}
       </div>
     </div>
-  );
+  )
 }
 
 export function generateMetadata(): Metadata {
   return {
     title: `Erin Jerri's Website`,
-  };
+  }
 }

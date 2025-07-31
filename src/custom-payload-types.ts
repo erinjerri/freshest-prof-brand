@@ -11,6 +11,6 @@ export type CardPostData = {
     description: string // Always provided with fallback
     image: (Media & { url: string; alt: string }) | null // Match mapPostToCard output
   }
-  categories: (number | Category)[] // Non-null array, matches mapPostToCard output
+  categories: (number | Category)[] | null // CAN be null, matches mapPostToCard output
   publishedAt: string // Always provided with fallback
 }
