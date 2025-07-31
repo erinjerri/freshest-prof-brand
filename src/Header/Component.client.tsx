@@ -1,4 +1,5 @@
 'use client'
+
 import { useHeaderTheme } from '@/providers/HeaderTheme'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -12,24 +13,34 @@ interface HeaderClientProps {
 }
 
 export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
-  /* Storing the value in a useState to avoid hydration errors */
-  const [theme, setTheme] = useState<string | null>(null)
   const { headerTheme, setHeaderTheme } = useHeaderTheme()
   const pathname = usePathname()
 
+  const [theme, setTheme] = useState<string | null>(null)
+  const [isMounted, setIsMounted] = useState(false)
+
+  // Reset theme on route change
   useEffect(() => {
     setHeaderTheme(null)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname])
+  }, [pathname, setHeaderTheme])
 
+  // Mark component as mounted to avoid SSR mismatch
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  // Sync theme from context
   useEffect(() => {
     if (headerTheme && headerTheme !== theme) {
       setTheme(headerTheme)
     }
-  }, [headerTheme]) // Removed theme from dependencies to prevent infinite loop
+  }, [headerTheme])
+
+  // Only apply data-theme after hydration
+  const headerProps = isMounted && theme ? { 'data-theme': theme } : {}
 
   return (
-    <header className="container relative z-20" {...(theme ? { 'data-theme': theme } : {})}>
+    <header className="container relative z-20" {...headerProps}>
       <div className="py-8 flex justify-between">
         <Link href="/">
           <Logo loading="eager" priority="high" className="invert dark:invert-0" />
