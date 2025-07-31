@@ -25,7 +25,6 @@
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
-
     --card: 240 5% 96%;
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
@@ -73,23 +72,44 @@
     --warning: 34 51% 25%;
     --error: 10 39% 43%;
   }
-}
 
-@layer base {
-  * {
-    @apply border-border;
-  }
   body {
     @apply bg-background text-foreground min-h-[100vh] flex flex-col;
     font-family: 'Satoshi', sans-serif;
   }
+
+  /* Apply borders only to specific elements */
+  input,
+  button,
+  [class*='border-'] {
+    @apply border-border;
+  }
+
+  /* Style ProseMirror elements from Lexical richtext */
+  .ProseMirror h1,
+  .ProseMirror h2,
+  .ProseMirror h3 {
+    @apply text-2xl font-bold mb-4 text-foreground;
+  }
+
+  .ProseMirror p {
+    @apply text-base text-muted-foreground;
+  }
+
+  /* Dark mode adjustments for ProseMirror */
+  [data-theme='dark'] .ProseMirror h1,
+  [data-theme='dark'] .ProseMirror h2,
+  [data-theme='dark'] .ProseMirror h3 {
+    @apply text-foreground;
+  }
+
+  [data-theme='dark'] .ProseMirror p {
+    @apply text-muted-foreground;
+  }
 }
 
-html {
-  opacity: 0;
-}
-
+/* Remove FOUC-causing opacity rules unless critical */
 html[data-theme='dark'],
 html[data-theme='light'] {
-  opacity: initial;
+  opacity: 1;
 }

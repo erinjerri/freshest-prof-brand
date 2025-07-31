@@ -11,7 +11,7 @@
     "incremental": true,
     "jsx": "preserve",
     "module": "esnext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "resolveJsonModule": true,
     "sourceMap": true,
     "isolatedModules": true,
@@ -24,7 +24,9 @@
     ],
     "paths": {
       "@payload-config": ["./src/payload.config.ts"],
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@/custom-payload-types": ["./src/custom-payload-types.ts"],
+      "@utils/*": ["./src/utilities/*"]
     }
   },
   "include": [

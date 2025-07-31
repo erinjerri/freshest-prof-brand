@@ -1,37 +1,45 @@
-import type { Metadata } from 'next/types'
+import type { Metadata } from 'next/types';
+import { CollectionArchive } from '@/components/CollectionArchive';
+import { PageRange } from '@/components/PageRange';
+import { Pagination } from '@/components/Pagination';
+import configPromise from '@payload-config';
+import { getPayload } from 'payload';
+import React from 'react';
+import PageClient from './page.client';
+import { mapPostToCard } from '@utils/mapPostToCard'; // Updated import path
 
-import { CollectionArchive } from '@/components/CollectionArchive'
-import { PageRange } from '@/components/PageRange'
-import { Pagination } from '@/components/Pagination'
-import configPromise from '@payload-config'
-import { getPayload } from 'payload'
-import React from 'react'
-import PageClient from './page.client'
-import { notFound } from 'next/navigation'
+export const dynamic = 'force-static';
+export const revalidate = 600;
 
-export const revalidate = 600
+export default async function Page() {
+  const payload = await getPayload({ config: configPromise });
 
-type Args = {
-  params: Promise<{
-    pageNumber: string
-  }>
-}
-
-export default async function Page({ params: paramsPromise }: Args) {
-  const { pageNumber } = await paramsPromise
-  const payload = await getPayload({ config: configPromise })
-
-  const sanitizedPageNumber = Number(pageNumber)
-
-  if (!Number.isInteger(sanitizedPageNumber)) notFound()
-
-  const posts = await payload.find({
+  const result = await payload.find({
     collection: 'posts',
     depth: 1,
     limit: 12,
-    page: sanitizedPageNumber,
     overrideAccess: false,
-  })
+    select: {
+      title: true,
+      slug: true,
+      categories: true,
+      meta: true,
+      heroImage: true, // <--- IMPORTANT: Needed for image rendering
+      publishedAt: true,
+    },
+    sort: '-publishedAt',
+  });
+
+  // Defensive: fallback sort if not sorted on backend
+  const sortedDocs = [...result.docs].sort((a, b) => {
+    if (!a.publishedAt && !b.publishedAt) return 0;
+    if (!a.publishedAt) return 1;
+    if (!b.publishedAt) return -1;
+    return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+  });
+
+  // 🟢 Map posts to CardPostData!
+  const cardPosts: CardPostData[] = sortedDocs.map(mapPostToCard);
 
   return (
     <div className="pt-24 pb-24">
@@ -45,44 +53,26 @@ export default async function Page({ params: paramsPromise }: Args) {
       <div className="container mb-8">
         <PageRange
           collection="posts"
-          currentPage={posts.page}
+          currentPage={result.page}
           limit={12}
-          totalDocs={posts.totalDocs}
+          totalDocs={result.totalDocs}
         />
       </div>
 
-      <CollectionArchive posts={posts.docs} />
+      {/* Only pass CardPostData[]! */}
+      <CollectionArchive posts={cardPosts} />
 
       <div className="container">
-        {posts?.page && posts?.totalPages > 1 && (
-          <Pagination page={posts.page} totalPages={posts.totalPages} />
+        {result.totalPages > 1 && result.page && (
+          <Pagination page={result.page} totalPages={result.totalPages} />
         )}
       </div>
     </div>
-  )
+  );
 }
 
-export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
-  const { pageNumber } = await paramsPromise
+export function generateMetadata(): Metadata {
   return {
-    title: `Payload Website Template Posts Page ${pageNumber || ''}`,
-  }
-}
-
-export async function generateStaticParams() {
-  const payload = await getPayload({ config: configPromise })
-  const { totalDocs } = await payload.count({
-    collection: 'posts',
-    overrideAccess: false,
-  })
-
-  const totalPages = Math.ceil(totalDocs / 10)
-
-  const pages: { pageNumber: string }[] = []
-
-  for (let i = 1; i <= totalPages; i++) {
-    pages.push({ pageNumber: String(i) })
-  }
-
-  return pages
+    title: `Erin Jerri's Website`,
+  };
 }

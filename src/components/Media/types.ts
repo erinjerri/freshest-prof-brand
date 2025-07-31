@@ -1,3 +1,4 @@
+// src/components/Media/types.ts
 import type { StaticImageData } from 'next/image'
 import type { ElementType, Ref } from 'react'
 
@@ -9,7 +10,7 @@ export interface Props {
   fill?: boolean // for NextImage only
   htmlElement?: ElementType | null
   pictureClassName?: string
-  imgClassName?: string
+  imgClassName?: string // Added this
   onClick?: () => void
   onLoad?: () => void
   loading?: 'lazy' | 'eager' // for NextImage only
@@ -18,5 +19,5 @@ export interface Props {
   resource?: MediaType | string | number | null // for Payload media
   size?: string // for NextImage only
   src?: StaticImageData // for static media
-  videoClassName?: string
+  videoClassName?: string // Added this
 }

@@ -1,9 +1,9 @@
-import type { Post } from '@/payload-types'
+// src/components/CollectionArchive/index.tsx
 
-import type { CardPostData } from '@/custom-payload-types'
+import type { CardPostData } from '@/custom-payload-types';
 
 export const CollectionArchive: React.FC<{
-  posts: CardPostData[]
+  posts: CardPostData[];
 }> = ({ posts }) => {
   return (
     <div className="container">
@@ -12,10 +12,17 @@ export const CollectionArchive: React.FC<{
           <div key={post.id}>
             <h2>{post.title}</h2>
             <p>Slug: {post.slug}</p>
-            {/* Add more rendering logic as needed */}
+            {/* Robust image rendering */}
+            {post.meta?.image?.url && (
+              <img
+                src={post.meta.image.url}
+                alt={post.meta.image.alt || post.title}
+                className="rounded shadow"
+              />
+            )}
           </div>
         ))}
       </div>
     </div>
-  )
-}
+  );
+};

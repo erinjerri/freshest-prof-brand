@@ -1,20 +1,17 @@
 // src/custom-payload-types.ts
-// Import the auto-generated types from Payload
-import type { Post, Media, Category } from '@/payload-types'
 
-// Define CardPostData as a subset of Post
+import type { Post, Media, Category } from '@/payload-types';
+
+// For rendering archive cards in the UI
 export type CardPostData = {
-  id: Post['id']
-  title: Post['title']
-  slug: Post['slug']
-  // --- CHANGE THIS LINE ---
-  meta?: {
-    // The object can be undefined or null
-    title?: string | null
-    description?: string | null
-    image?: string | Media | null
-  } | null // <--- ADDED '| null' here for the 'meta' object itself
-  // --- END CHANGE ---
-  categories?: (number | Category)[] | null
-  publishedAt?: Post['publishedAt']
-}
+  id: string; // Always a string, handled by mapPostToCard
+  title: string; // Always provided with fallback
+  slug: string; // Always required for URLs
+  meta: {
+    title: string; // Always provided with fallback
+    description: string; // Always provided with fallback
+    image: (Media & { url: string; alt: string }) | null; // Match mapPostToCard output
+  };
+  categories: (number | Category)[] | null; // Match Payload relation field behavior
+  publishedAt: string; // Always provided with fallback
+};

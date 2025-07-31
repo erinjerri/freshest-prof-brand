@@ -1,13 +1,13 @@
-import tailwindcssAnimate from 'tailwindcss-animate'
-import typography from '@tailwindcss/typography'
+import tailwindcssAnimate from 'tailwindcss-animate';
+import typography from '@tailwindcss/typography';
 
 /** @type {import('tailwindcss').Config} */
 const config = {
   content: [
-    './pages/**/*.{ts,tsx}',
+    './app/**/*.{ts,tsx}', // Updated from ./pages/ to match App Router
     './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
+    './node_modules/@payloadcms/richtext-lexical/**/*.{ts,tsx}', // Added for Lexical editor
   ],
   darkMode: ['selector', '[data-theme="dark"]'],
   plugins: [tailwindcssAnimate, typography],
@@ -25,6 +25,12 @@ const config = {
     'bg-success/30',
     'border-warning',
     'bg-warning/30',
+    'prose', // Safelist typography classes
+    'prose-h1',
+    'prose-h2',
+    'prose-h3',
+    'prose-p',
+    'prose-invert', // Dark mode compatibility
   ],
   theme: {
     container: {
@@ -107,7 +113,7 @@ const config = {
           to: { height: '0' },
         },
       },
-      typography: () => ({
+      typography: (theme) => ({
         DEFAULT: {
           css: [
             {
@@ -116,6 +122,30 @@ const config = {
               h1: {
                 fontWeight: 'normal',
                 marginBottom: '0.25em',
+                color: theme('colors.foreground'),
+              },
+              h2: {
+                fontWeight: 600,
+                marginBottom: '0.5em',
+                color: theme('colors.foreground'),
+              },
+              h3: {
+                fontWeight: 500,
+                marginBottom: '0.5em',
+                color: theme('colors.foreground'),
+              },
+              p: {
+                color: theme('colors.muted.foreground'),
+              },
+            },
+            {
+              '&.prose-invert': {
+                '--tw-prose-body': theme('colors.muted.foreground'),
+                '--tw-prose-headings': theme('colors.foreground'),
+                h1: { color: theme('colors.foreground') },
+                h2: { color: theme('colors.foreground') },
+                h3: { color: theme('colors.foreground') },
+                p: { color: theme('colors.muted.foreground') },
               },
             },
           ],
@@ -123,31 +153,22 @@ const config = {
         base: {
           css: [
             {
-              h1: {
-                fontSize: '2.5rem',
-              },
-              h2: {
-                fontSize: '1.25rem',
-                fontWeight: 600,
-              },
+              h1: { fontSize: '2.5rem' },
+              h2: { fontSize: '1.25rem' },
             },
           ],
         },
         md: {
           css: [
             {
-              h1: {
-                fontSize: '3.5rem',
-              },
-              h2: {
-                fontSize: '1.5rem',
-              },
+              h1: { fontSize: '3.5rem' },
+              h2: { fontSize: '1.5rem' },
             },
           ],
         },
       }),
     },
   },
-}
+};
 
-export default config
+export default config;
