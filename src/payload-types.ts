@@ -496,6 +496,10 @@ export interface ContentBlock {
  */
 export interface MediaBlock {
   media: number | Media;
+  /**
+   * Choose how this media block should be displayed on the page
+   */
+  layout: 'card' | 'cleanCard' | 'inline' | 'fullwidth' | 'hero';
   id?: string | null;
   blockName?: string | null;
   blockType: 'mediaBlock';
@@ -1096,6 +1100,7 @@ export interface ContentBlockSelect<T extends boolean = true> {
  */
 export interface MediaBlockSelect<T extends boolean = true> {
   media?: T;
+  layout?: T;
   id?: T;
   blockName?: T;
 }

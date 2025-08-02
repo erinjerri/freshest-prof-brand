@@ -1,38 +1,23 @@
-import type { Post, ArchiveBlock as ArchiveBlockProps } from '@/payload-types'
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
-import React from 'react'
+'use client'
+
+import type { ArchiveBlock as ArchiveBlockProps } from '@/payload-types'
+import React, { useEffect, useState } from 'react'
 import RichText from '@/components/RichText'
 import { CollectionArchive } from '@/components/CollectionArchive'
-import { mapPostToCard } from '@utils/mapPostToCard' // Ensure this path matches tsconfig.json
+import { mapPostToCard } from '@utils/mapPostToCard'
 
-// Wrapper to handle async logic
-const ArchiveBlockComponent = async (props: ArchiveBlockProps & { id?: string }) => {
-  const { id, categories, introContent, limit: limitFromProps, populateBy, selectedDocs } = props
-  const limit = limitFromProps || 3
+export const ArchiveBlock: React.FC<ArchiveBlockProps & { id?: string }> = (props) => {
+  const { id, introContent, selectedDocs = [] } = props
 
-  let posts: Post[] = []
+  const [mappedPosts, setMappedPosts] = useState([])
 
-  if (populateBy === 'collection') {
-    const payload = await getPayload({ config: configPromise })
-    const flattenedCategories =
-      categories?.map((cat) => (typeof cat === 'object' ? cat.id : cat)) || []
-    const fetchedPosts = await payload.find({
-      collection: 'posts',
-      depth: 1,
-      limit,
-      ...(flattenedCategories.length > 0
-        ? { where: { categories: { in: flattenedCategories } } }
-        : {}),
-    })
-    posts = fetchedPosts.docs
-  } else if (selectedDocs?.length) {
-    posts = selectedDocs
+  useEffect(() => {
+    const posts = selectedDocs
       .map((doc) => (typeof doc.value === 'object' ? doc.value : null))
-      .filter((doc): doc is Post => doc !== null)
-  }
+      .filter((doc): doc is any => doc !== null)
 
-  const mappedPosts = posts.map((post) => mapPostToCard(post))
+    setMappedPosts(posts.map(mapPostToCard))
+  }, [selectedDocs])
 
   return (
     <div className="my-16" id={`block-${id}`}>
@@ -44,9 +29,4 @@ const ArchiveBlockComponent = async (props: ArchiveBlockProps & { id?: string })
       <CollectionArchive posts={mappedPosts} />
     </div>
   )
-}
-
-// Export as a client component if needed, or keep as server component
-export const ArchiveBlock: React.FC<ArchiveBlockProps & { id?: string }> = (props) => {
-  return <ArchiveBlockComponent {...props} />
 }

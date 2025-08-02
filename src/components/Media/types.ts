@@ -20,4 +20,11 @@ export interface Props {
   size?: string // for NextImage only
   src?: StaticImageData // for static media
   videoClassName?: string // Added this
+
+  // Add these layout-related props
+  layout?: 'card' | 'hero' | 'fullwidth'
+  enableGutter?: boolean
+  disableInnerContainer?: boolean
+  isHomePage?: boolean
+  isPostCard?: boolean
 }
