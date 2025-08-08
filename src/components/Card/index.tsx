@@ -41,7 +41,7 @@ export const Card: React.FC<{
       )}
       ref={card.ref}
     >
-      <div className="relative w-full aspect-video bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
+      <div className="relative w-full aspect-video bg-gray-50/50 dark:bg-gray-700/50 flex items-center justify-center overflow-hidden">
         {/* Conditional rendering for metaImage based on its type */}
         {metaImage ? (
           typeof metaImage === 'string' ? (
