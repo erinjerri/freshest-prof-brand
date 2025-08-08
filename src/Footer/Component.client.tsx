@@ -31,18 +31,23 @@ export const FooterClient: React.FC<FooterClientProps> = ({ data }) => {
       className="mt-auto border-t border-border bg-black dark:bg-card text-white"
       {...footerProps}
     >
-      <div className="container py-8 gap-8 flex flex-col md:flex-row md:justify-between">
+      <div className="container py-10 flex flex-col items-center gap-8">
         <Link className="flex items-center" href="/">
           <Logo />
         </Link>
 
-        <div className="flex flex-col-reverse items-start md:flex-row gap-4 md:items-center">
+        <nav className="flex flex-wrap justify-center gap-x-8 gap-y-3">
+          {navItems.map(({ link }, i) => (
+            <CMSLink
+              className="text-white hover:text-[#1C8FDA] transition-colors"
+              key={i}
+              {...link}
+            />
+          ))}
+        </nav>
+
+        <div className="flex items-center gap-4">
           <ThemeSelector />
-          <nav className="flex flex-col md:flex-row gap-4">
-            {navItems.map(({ link }, i) => (
-              <CMSLink className="text-white" key={i} {...link} />
-            ))}
-          </nav>
         </div>
       </div>
     </footer>

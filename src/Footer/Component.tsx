@@ -1,30 +1,35 @@
-import Link from 'next/link';
-import React from 'react';
-import type { Footer } from '@/payload-types';
+import Link from 'next/link'
+import React from 'react'
+import type { Footer } from '@/payload-types'
 
-import { ThemeSelector } from '@/providers/Theme/ThemeSelector';
-import { CMSLink } from '@/components/Link';
-import { Logo } from '@/components/Logo/Logo';
+import { ThemeSelector } from '@/providers/Theme/ThemeSelector'
+import { CMSLink } from '@/components/Link'
+import { Logo } from '@/components/Logo/Logo'
 
 export function Footer({ data }: { data: Footer }) {
-  const navItems = data?.navItems || [];
+  const navItems = data?.navItems || []
 
   return (
     <footer className="mt-auto border-t border-border bg-black dark:bg-card text-white">
-      <div className="container py-8 gap-8 flex flex-col md:flex-row md:justify-between">
+      <div className="container py-10 flex flex-col items-center gap-8">
         <Link className="flex items-center" href="/">
           <Logo />
         </Link>
 
-        <div className="flex flex-col-reverse items-start md:flex-row gap-4 md:items-center">
+        <nav className="flex flex-wrap justify-center gap-x-8 gap-y-3">
+          {navItems.map(({ link }, i) => (
+            <CMSLink
+              className="text-white hover:text-[#1C8FDA] transition-colors"
+              key={i}
+              {...link}
+            />
+          ))}
+        </nav>
+
+        <div className="flex items-center gap-4">
           <ThemeSelector />
-          <nav className="flex flex-col md:flex-row gap-4">
-            {navItems.map(({ link }, i) => {
-              return <CMSLink className="text-white" key={i} {...link} />;
-            })}
-          </nav>
         </div>
       </div>
     </footer>
-  );
+  )
 }

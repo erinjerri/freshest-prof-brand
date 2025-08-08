@@ -14,7 +14,9 @@ export const ArchiveBlock: React.FC<ArchiveBlockProps & { id?: string }> = (prop
   const selectedCategoryIds = useMemo(() => {
     if (!categories || categories.length === 0) return null
     return categories
-      .map((cat) => (typeof cat === 'object' && cat ? cat.id : typeof cat === 'number' ? cat : null))
+      .map((cat) =>
+        typeof cat === 'object' && cat ? cat.id : typeof cat === 'number' ? cat : null,
+      )
       .filter((v): v is number => v !== null)
   }, [categories])
 
@@ -48,13 +50,15 @@ export const ArchiveBlock: React.FC<ArchiveBlockProps & { id?: string }> = (prop
             filtered = docs.filter((post) => {
               if (!post.categories || post.categories.length === 0) return false
               return post.categories.some((cat) => {
-                const catId = typeof cat === 'object' && cat ? cat.id : typeof cat === 'number' ? cat : null
+                const catId =
+                  typeof cat === 'object' && cat ? cat.id : typeof cat === 'number' ? cat : null
                 return catId !== null && selectedCategoryIds.includes(catId)
               })
             })
           }
 
-          const limited = typeof limit === 'number' && limit > 0 ? filtered.slice(0, limit) : filtered
+          const limited =
+            typeof limit === 'number' && limit > 0 ? filtered.slice(0, limit) : filtered
           setMappedPosts(limited.map(mapPostToCard))
         } catch (err) {
           // ignore aborted

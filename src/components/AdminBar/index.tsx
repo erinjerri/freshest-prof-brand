@@ -5,7 +5,7 @@ import type { PayloadAdminBarProps, PayloadMeUser } from '@payloadcms/admin-bar'
 import { cn } from '@/utilities/ui'
 import { useSelectedLayoutSegments } from 'next/navigation'
 import { PayloadAdminBar } from '@payloadcms/admin-bar'
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 import './index.scss'
@@ -42,8 +42,16 @@ export const AdminBar: React.FC<{
   ) as keyof typeof collectionLabels
   const router = useRouter()
 
+  const lastUserIdRef = useRef<string | null>(null)
   const onAuthChange = React.useCallback((user: PayloadMeUser) => {
-    setShow(Boolean(user?.id))
+    const nextUserId = (user?.id as unknown as string) ?? null
+    const hasUser = Boolean(nextUserId)
+
+    // Prevent unnecessary state updates that can cause effect loops in dev
+    if (lastUserIdRef.current === nextUserId) return
+
+    lastUserIdRef.current = nextUserId
+    setShow(hasUser)
   }, [])
 
   return (
