@@ -36,9 +36,23 @@ export const ArchiveBlock: React.FC<ArchiveBlockProps & { id?: string }> = (prop
       const controller = new AbortController()
       const fetchPosts = async () => {
         try {
-          // Fetch a generous set, then filter client-side by categories if provided
-          const pageSize = typeof limit === 'number' && limit > 0 ? Math.max(limit, 12) : 12
-          const res = await fetch(`/api/posts?limit=${pageSize}&sort=-publishedAt&depth=1`, {
+          // Build query with server-side filtering when categories are selected
+          const params = new URLSearchParams()
+          params.set('sort', '-publishedAt')
+          params.set('depth', '1')
+
+          if (selectedCategoryIds && selectedCategoryIds.length > 0) {
+            // Ask backend to return all matching docs to avoid client-side page truncation
+            params.set('pagination', 'false')
+            for (const categoryId of selectedCategoryIds) {
+              params.append('where[categories][in]', String(categoryId))
+            }
+          } else {
+            const pageSize = typeof limit === 'number' && limit > 0 ? Math.max(limit, 12) : 12
+            params.set('limit', String(pageSize))
+          }
+
+          const res = await fetch(`/api/posts?${params.toString()}`, {
             signal: controller.signal,
           })
           if (!res.ok) return
@@ -47,6 +61,7 @@ export const ArchiveBlock: React.FC<ArchiveBlockProps & { id?: string }> = (prop
 
           let filtered = docs
           if (selectedCategoryIds && selectedCategoryIds.length > 0) {
+            // Defensive: keep client-side filter in case of any API quirks
             filtered = docs.filter((post) => {
               if (!post.categories || post.categories.length === 0) return false
               return post.categories.some((cat) => {
