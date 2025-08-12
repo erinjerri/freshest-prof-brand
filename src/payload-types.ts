@@ -495,7 +495,12 @@ export interface ContentBlock {
  * via the `definition` "MediaBlock".
  */
 export interface MediaBlock {
-  media: number | Media;
+  sourceType?: ('upload' | 'embed') | null;
+  media?: (number | null) | Media;
+  /**
+   * Paste a YouTube or Vimeo URL
+   */
+  embedUrl?: string | null;
   /**
    * Choose how this media block should be displayed on the page
    */
@@ -1099,7 +1104,9 @@ export interface ContentBlockSelect<T extends boolean = true> {
  * via the `definition` "MediaBlock_select".
  */
 export interface MediaBlockSelect<T extends boolean = true> {
+  sourceType?: T;
   media?: T;
+  embedUrl?: T;
   layout?: T;
   id?: T;
   blockName?: T;

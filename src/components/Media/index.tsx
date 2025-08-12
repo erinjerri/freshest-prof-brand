@@ -5,27 +5,28 @@ import type { Props } from './types'
 
 import { ImageMedia } from './ImageMedia'
 import { VideoMedia } from './VideoMedia'
+import { EmbedMedia } from './EmbedMedia'
 
 export const Media: React.FC<Props> = (props) => {
-  // Destructure imgClassName and videoClassName from props here
-  const { className, htmlElement = 'div', resource, imgClassName, videoClassName } = props
+  const { className, htmlElement = 'div', resource, imgClassName, videoClassName, embedUrl } = props
+
+  if (embedUrl) {
+    const Tag = htmlElement || Fragment
+    return (
+      <Tag {...(htmlElement !== null ? { className } : {})}>
+        <EmbedMedia url={embedUrl} className={videoClassName || className} />
+      </Tag>
+    )
+  }
 
   const isVideo = typeof resource === 'object' && resource?.mimeType?.includes('video')
   const Tag = htmlElement || Fragment
 
   return (
-    <Tag
-      {...(htmlElement !== null
-        ? {
-            className,
-          }
-        : {})}
-    >
+    <Tag {...(htmlElement !== null ? { className } : {})}>
       {isVideo ? (
-        // Pass videoClassName to VideoMedia
         <VideoMedia {...props} className={videoClassName} />
       ) : (
-        // Pass imgClassName to ImageMedia
         <ImageMedia {...props} className={imgClassName} />
       )}
     </Tag>

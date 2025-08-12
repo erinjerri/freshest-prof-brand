@@ -31,6 +31,9 @@ export const MediaBlock: React.FC<MediaBlockProps & ExtraUIProps> = (props) => {
     disableInnerContainer = false,
   } = props
 
+  const sourceType = (props as any)?.sourceType ?? 'upload'
+  const embedUrl: string | undefined = (props as any)?.embedUrl
+
   const resource: MediaType | null =
     media && typeof media === 'object' ? (media as MediaType) : null
 
@@ -47,7 +50,8 @@ export const MediaBlock: React.FC<MediaBlockProps & ExtraUIProps> = (props) => {
   const innerContent = (
     <figure className={cn('relative', layout === 'hero' ? 'aspect-[16/9]' : undefined)}>
       <Media
-        resource={resource || undefined}
+        resource={sourceType === 'upload' ? resource || undefined : undefined}
+        embedUrl={sourceType === 'embed' ? embedUrl : undefined}
         imgClassName={cn(
           imgClassName,
           layout === 'card' && 'rounded-lg',
@@ -65,7 +69,7 @@ export const MediaBlock: React.FC<MediaBlockProps & ExtraUIProps> = (props) => {
         priority={layout === 'hero'}
       />
 
-      {resource && resource.caption ? (
+      {sourceType === 'upload' && resource && resource.caption ? (
         <figcaption className={cn('mt-3 text-sm text-muted-foreground', captionClassName)}>
           <RichText data={resource.caption} enableGutter={false} />
         </figcaption>

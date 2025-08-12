@@ -21,6 +21,9 @@ export interface Props {
   src?: StaticImageData // for static media
   videoClassName?: string // Added this
 
+  // New: support embed rendering
+  embedUrl?: string
+
   // Add these layout-related props
   layout?: 'card' | 'hero' | 'fullwidth'
   enableGutter?: boolean
