@@ -71,7 +71,7 @@ export const MediaBlock: React.FC<MediaBlockProps & ExtraUIProps> = (props) => {
 
       {sourceType === 'upload' && resource && resource.caption ? (
         <figcaption className={cn('mt-3 text-sm text-muted-foreground', captionClassName)}>
-          <RichText data={resource.caption} enableGutter={false} />
+          <RichText data={resource.caption} enableGutter={false} enableProse={false} />
         </figcaption>
       ) : null}
     </figure>

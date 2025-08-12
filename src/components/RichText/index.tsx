@@ -39,7 +39,9 @@ const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
 const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) => ({
   ...defaultConverters,
   ...LinkJSXConverter({ internalDocToHref }),
-  paragraph: ({ children }) => <div>{children}</div>, // avoid <p> inside <p>
+  paragraph: ({ node, nodesToJSX }) => (
+    <div>{nodesToJSX({ nodes: (node as any)?.children || [] })}</div>
+  ), // avoid <p> inside <p>
   blocks: {
     banner: ({ node }) => <BannerBlock className="col-start-2 mb-4" {...node.fields} />,
     mediaBlock: ({ node }) => (
