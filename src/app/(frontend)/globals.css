@@ -78,6 +78,11 @@
     font-family: 'Satoshi', sans-serif;
   }
 
+  /* Ensure fixed progress bar sits above content without layout shift */
+  body > div.progress-bar-placeholder {
+    height: 0.25rem;
+  }
+
   /* Apply borders only to specific elements */
   input,
   button,
