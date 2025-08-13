@@ -13,6 +13,7 @@ import {
 } from '@payloadcms/richtext-lexical/react'
 
 import { CodeBlock, CodeBlockProps } from '@/blocks/Code/Component'
+import { CaptionBlock, CaptionBlockProps } from '@/blocks/Caption/Component'
 
 import type {
   BannerBlock as BannerBlockProps,
@@ -25,7 +26,9 @@ import { cn } from '@/utilities/ui'
 
 type NodeTypes =
   | DefaultNodeTypes
-  | SerializedBlockNode<CTABlockProps | MediaBlockProps | BannerBlockProps | CodeBlockProps>
+  | SerializedBlockNode<
+      CTABlockProps | MediaBlockProps | BannerBlockProps | CodeBlockProps | CaptionBlockProps
+    >
 
 const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
   const { value, relationTo } = linkNode.fields.doc!
@@ -40,20 +43,26 @@ const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) 
   ...defaultConverters,
   ...LinkJSXConverter({ internalDocToHref }),
   paragraph: ({ node, nodesToJSX }) => (
-    <div>{nodesToJSX({ nodes: (node as any)?.children || [] })}</div>
-  ), // avoid <p> inside <p>
+    <div className="my-6 leading-7">{nodesToJSX({ nodes: (node as any)?.children || [] })}</div>
+  ),
   blocks: {
     banner: ({ node }) => <BannerBlock className="col-start-2 mb-4" {...node.fields} />,
-    mediaBlock: ({ node }) => (
-      <MediaBlock
-        className="col-start-1 col-span-3"
-        imgClassName="m-0"
-        {...node.fields}
-        captionClassName="mx-auto max-w-[48rem]"
-        enableGutter={false}
-        disableInnerContainer
-      />
-    ),
+    mediaBlock: ({ node }) => {
+      const layout = (node.fields as any)?.layout
+      const wrapperClass = layout === 'inline' ? 'col-start-2' : 'col-start-1 col-span-3'
+      const imgClass = layout === 'inline' ? 'mx-auto' : 'm-0'
+      return (
+        <MediaBlock
+          className={wrapperClass}
+          imgClassName={imgClass}
+          {...node.fields}
+          captionClassName="mx-auto max-w-[48rem] text-center"
+          enableGutter={false}
+          disableInnerContainer
+        />
+      )
+    },
+    caption: ({ node }) => <CaptionBlock className="col-start-2" {...(node.fields as any)} />,
     code: ({ node }) => <CodeBlock className="col-start-2" {...node.fields} />,
     cta: ({ node }) => <CallToActionBlock {...node.fields} />,
   },
@@ -75,7 +84,7 @@ export default function RichText(props: Props) {
         {
           container: enableGutter,
           'max-w-none': !enableGutter,
-          'mx-auto prose md:prose-md dark:prose-invert': enableProse,
+          'mx-auto prose md:prose-md dark:prose-invert prose-p:my-6 prose-p:leading-7': enableProse,
         },
         className,
       )}

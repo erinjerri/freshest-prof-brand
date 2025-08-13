@@ -135,3 +135,10 @@ html[data-theme='light'] {
 .payload-richtext figcaption {
   text-align: center;
 }
+
+/* Increase vertical rhythm for paragraphs globally in rich text */
+.payload-richtext p {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.75rem; /* 28px */
+}

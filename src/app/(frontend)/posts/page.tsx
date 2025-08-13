@@ -7,6 +7,7 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import React from 'react'
 import PageClient from './page.client'
+import FilterArchive from './FilterArchive.client'
 import { mapPostToCard } from '@utils/mapPostToCard' // Updated import path
 import type { CardPostData } from '@/custom-payload-types'
 export const dynamic = 'force-static'
@@ -48,6 +49,14 @@ export default async function Page() {
     })),
   )
 
+  // fetch categories for filter bar
+  const catsRes = await payload.find({
+    collection: 'categories',
+    limit: 200,
+    select: { id: true, title: true, slug: true },
+    sort: 'title',
+  })
+
   return (
     <div className="pt-24 pb-24">
       <PageClient />
@@ -57,16 +66,8 @@ export default async function Page() {
         </div>
       </div>
 
-      <div className="container mb-8">
-        <PageRange
-          collection="posts"
-          currentPage={posts.page}
-          limit={12}
-          totalDocs={posts.totalDocs}
-        />
-      </div>
-
-      <CollectionArchive posts={cardPosts} />
+      {/* Filterable archive */}
+      <FilterArchive posts={cardPosts} categories={catsRes.docs as any} />
 
       <div className="container">
         {posts.totalPages > 1 && posts.page && (

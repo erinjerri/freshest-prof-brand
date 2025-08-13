@@ -48,7 +48,13 @@ export const MediaBlock: React.FC<MediaBlockProps & ExtraUIProps> = (props) => {
   )
 
   const innerContent = (
-    <figure className={cn('relative', layout === 'hero' ? 'aspect-[16/9]' : undefined)}>
+    <figure
+      className={cn(
+        'relative',
+        layout === 'hero' ? 'aspect-[16/9]' : undefined,
+        layout === 'inline' && 'mx-auto',
+      )}
+    >
       <Media
         resource={sourceType === 'upload' ? resource || undefined : undefined}
         embedUrl={sourceType === 'embed' ? embedUrl : undefined}
