@@ -69,9 +69,17 @@ export const MediaBlock: React.FC<MediaBlockProps & ExtraUIProps> = (props) => {
         priority={layout === 'hero'}
       />
 
-      {sourceType === 'upload' && resource && resource.caption ? (
-        <figcaption className={cn('mt-3 text-sm text-muted-foreground', captionClassName)}>
-          <RichText data={resource.caption} enableGutter={false} enableProse={false} />
+      {/* Captions: prefer custom block caption when enabled; fall back to media resource caption */}
+      {((props as any)?.showCaption && (props as any)?.caption) ||
+      (sourceType === 'upload' && resource && resource.caption) ? (
+        <figcaption
+          className={cn('mt-3 text-sm text-muted-foreground text-center', captionClassName)}
+        >
+          {(props as any)?.showCaption && (props as any)?.caption ? (
+            <RichText data={(props as any).caption} enableGutter={false} enableProse={false} />
+          ) : (
+            <RichText data={resource!.caption as any} enableGutter={false} enableProse={false} />
+          )}
         </figcaption>
       ) : null}
     </figure>

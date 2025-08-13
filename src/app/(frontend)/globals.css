@@ -113,3 +113,20 @@ html[data-theme='dark'],
 html[data-theme='light'] {
   opacity: 1;
 }
+
+/* Media block specific tweaks */
+.payload-richtext figure img {
+  /* Remove default image borders if any and ensure clean look */
+  border: none !important;
+  box-shadow: none;
+}
+
+.payload-richtext figure {
+  /* Center inline images by default */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.payload-richtext figcaption {
+  text-align: center;
+}

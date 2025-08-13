@@ -1,4 +1,9 @@
 import type { Block } from 'payload'
+import {
+  FixedToolbarFeature,
+  InlineToolbarFeature,
+  lexicalEditor,
+} from '@payloadcms/richtext-lexical'
 
 export const MediaBlock: Block = {
   slug: 'mediaBlock',
@@ -13,6 +18,25 @@ export const MediaBlock: Block = {
         { label: 'Upload', value: 'upload' },
         { label: 'Embed (YouTube/Vimeo)', value: 'embed' },
       ],
+    },
+    {
+      name: 'showCaption',
+      type: 'checkbox',
+      label: 'Show custom caption',
+      defaultValue: false,
+    },
+    {
+      name: 'caption',
+      type: 'richText',
+      label: 'Caption',
+      admin: {
+        condition: (_, { showCaption } = {}) => Boolean(showCaption),
+      },
+      editor: lexicalEditor({
+        features: ({ rootFeatures }) => {
+          return [...rootFeatures, FixedToolbarFeature(), InlineToolbarFeature()]
+        },
+      }),
     },
     {
       name: 'media',
@@ -54,7 +78,7 @@ export const MediaBlock: Block = {
       options: [
         { label: 'Card (Default) - With border and background', value: 'card' },
         { label: 'Clean Card - No border, clean background', value: 'cleanCard' },
-        { label: 'Inline - Simple, stays within content width', value: 'inline' },
+        { label: 'Inline - No border, centered image', value: 'inline' },
         { label: 'Full Width - Stretches edge to edge', value: 'fullwidth' },
         { label: 'Hero Style - Full width with overlay caption', value: 'hero' },
       ],

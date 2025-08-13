@@ -496,6 +496,22 @@ export interface ContentBlock {
  */
 export interface MediaBlock {
   sourceType?: ('upload' | 'embed') | null;
+  showCaption?: boolean | null;
+  caption?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   media?: (number | null) | Media;
   /**
    * Paste a YouTube or Vimeo URL
@@ -1105,6 +1121,8 @@ export interface ContentBlockSelect<T extends boolean = true> {
  */
 export interface MediaBlockSelect<T extends boolean = true> {
   sourceType?: T;
+  showCaption?: T;
+  caption?: T;
   media?: T;
   embedUrl?: T;
   layout?: T;

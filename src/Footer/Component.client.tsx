@@ -9,6 +9,7 @@ import type { Footer } from '@/payload-types'
 import { ThemeSelector } from '@/providers/Theme/ThemeSelector'
 import { CMSLink } from '@/components/Link'
 import { Logo } from '@/components/Logo/Logo'
+import { Facebook, Github, Mail, Newspaper } from 'lucide-react'
 
 interface FooterClientProps {
   data: Footer
@@ -19,6 +20,7 @@ export const FooterClient: React.FC<FooterClientProps> = ({ data }) => {
   const { theme } = useTheme()
 
   const [isMounted, setIsMounted] = useState(false)
+  const [email, setEmail] = useState('')
 
   useEffect(() => {
     setIsMounted(true)
@@ -35,6 +37,69 @@ export const FooterClient: React.FC<FooterClientProps> = ({ data }) => {
         <Link className="flex items-center" href="/">
           <Logo />
         </Link>
+
+        {/* Subscribe form */}
+        <form
+          className="w-full max-w-3xl flex items-stretch gap-4"
+          onSubmit={(e) => {
+            e.preventDefault()
+            window.location.href = 'https://erinjerri.substack.com'
+          }}
+        >
+          <input
+            type="email"
+            inputMode="email"
+            placeholder="Enter your email"
+            aria-label="Email address"
+            className="flex-1 bg-transparent border border-white/40 text-white placeholder:text-white/60 rounded px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#1C8FDA]"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <button
+            type="submit"
+            className="px-6 py-3 rounded bg-[#C7D8F5] text-black font-medium hover:bg-[#b9c9ea] transition-colors"
+          >
+            Subscribe
+          </button>
+        </form>
+
+        {/* Social icons */}
+        <div className="flex items-center gap-8">
+          <a
+            href="https://bit.ly/ErinJerriFBFanP"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Facebook"
+            className="text-white hover:text-[#1C8FDA] transition-colors"
+          >
+            <Facebook size={28} strokeWidth={2.2} />
+          </a>
+          <a
+            href="https://github.com/erinjerri"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="GitHub"
+            className="text-white hover:text-[#1C8FDA] transition-colors"
+          >
+            <Github size={28} strokeWidth={2.2} />
+          </a>
+          <a
+            href="mailto:erin@erinjerri.xyz."
+            aria-label="Email"
+            className="text-white hover:text-[#1C8FDA] transition-colors"
+          >
+            <Mail size={28} strokeWidth={2.2} />
+          </a>
+          <a
+            href="https://erinjerri.substack.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Substack"
+            className="text-white hover:text-[#1C8FDA] transition-colors"
+          >
+            <Newspaper size={28} strokeWidth={2.2} />
+          </a>
+        </div>
 
         <nav className="flex flex-wrap justify-center gap-x-8 gap-y-3">
           {navItems.map(({ link }, i) => (
