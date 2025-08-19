@@ -3,3 +3,4 @@ packages:
   - 'packages/*'
   - 'templates/*'
   - 'test/*'
+  - 'freshest-prof-brand*'
