@@ -131,9 +131,9 @@ html[data-theme='light'] {
 }
 
 .payload-richtext figure {
-  display: flex; /* Use flexbox for centering */
-  justify-content: center; /* Center the image horizontally */
-  margin: 1.5rem 0; /* Add some vertical spacing */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center children horizontally */
 }
 
 .payload-richtext img {
@@ -142,7 +142,11 @@ html[data-theme='light'] {
 }
 
 .payload-richtext figcaption {
-  text-align: center;
+  text-align: center !important;
+  width: 100%; /* Ensure it takes full width */
+  font-size: 14px; /* Adjust as needed */
+  color: #888; /* Adjust color as needed */
+  margin-top: 10px; /* Add some spacing above */
 }
 
 /* Increase vertical rhythm for paragraphs globally in rich text */
