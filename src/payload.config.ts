@@ -19,7 +19,6 @@ import { getServerSideURL } from './utilities/getURL'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-// --- Vercel/Netlify: serverURL should be dynamic and use env vars if possible ---
 const serverURL =
   getServerSideURL() ||
   process.env.PAYLOAD_PUBLIC_SERVER_URL ||
@@ -51,7 +50,7 @@ export default buildConfig({
 
   db: postgresAdapter({
     pool: {
-      connectionString: process.env.DATABASE_URL || '', // Updated from DATABASE_URI to DATABASE_URL
+      connectionString: process.env.DATABASE_URL || '',
     },
   }),
 
@@ -78,22 +77,17 @@ export default buildConfig({
     s3Storage({
       collections: {
         [Media.slug]: {
-          clientUploads: true, // Enable client-side uploads for Vercel
-          // Optional: Add a 'prefix' if files are in a subfolder (e.g., 'uploads/media')
-          // prefix: 'uploads/media', // Uncomment and adjust if needed
+          clientUploads: true,
         },
       },
       bucket: process.env.S3_BUCKET as string,
       config: {
-        // Supabase Storage endpoint (e.g., https://<project-id>.supabase.co/storage/v1)
         endpoint: process.env.S3_ENDPOINT as string,
-        // Match Supabase project region
-        region: process.env.S3_REGION || 'us-west-1', // Default to us-west-1 if not specified
+        region: process.env.S3_REGION || 'us-west-1',
         credentials: {
           accessKeyId: process.env.S3_ACCESS_KEY_ID as string,
           secretAccessKey: process.env.S3_SECRET_ACCESS_KEY as string,
         },
-        // Required for Supabase Storage
         forcePathStyle: true,
       },
     }),
