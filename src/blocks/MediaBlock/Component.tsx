@@ -7,6 +7,7 @@ import type { MediaBlock as MediaBlockProps, Media as MediaType } from '@/payloa
 import { Media } from '@/components/Media'
 import RichText from '@/components/RichText'
 import { cn } from '@/utilities/ui'
+import { EmbedMedia } from '@/components/Media/EmbedMedia'
 
 type ExtraUIProps = {
   className?: string
@@ -37,7 +38,6 @@ export const MediaBlock: React.FC<MediaBlockProps & ExtraUIProps> = (props) => {
   const resource: MediaType | null =
     media && typeof media === 'object' ? (media as MediaType) : null
 
-  // Choose outer styling by layout
   const outerClasses = cn(
     {
       'bg-muted/40 border rounded-xl': layout === 'card',
@@ -55,27 +55,35 @@ export const MediaBlock: React.FC<MediaBlockProps & ExtraUIProps> = (props) => {
         layout === 'inline' && 'mx-auto',
       )}
     >
-      <Media
-        resource={sourceType === 'upload' ? resource || undefined : undefined}
-        embedUrl={sourceType === 'embed' ? embedUrl : undefined}
-        imgClassName={cn(
-          imgClassName,
-          layout === 'card' && 'rounded-lg',
-          layout === 'inline' && 'mx-auto',
-          layout === 'fullwidth' && 'w-full h-auto',
-          layout === 'hero' && 'object-cover',
-        )}
-        videoClassName={cn(
-          videoClassName,
-          layout === 'fullwidth' && 'w-full h-auto',
-          layout === 'hero' && 'w-full h-full object-cover',
-        )}
-        // When we don't know exact intrinsic size, allow fill for hero
-        fill={layout === 'hero'}
-        priority={layout === 'hero'}
-      />
+      {sourceType === 'embed' && embedUrl ? (
+        <EmbedMedia
+          url={embedUrl}
+          className={cn(
+            videoClassName,
+            layout === 'fullwidth' && 'w-full h-auto',
+            layout === 'hero' && 'w-full h-full object-cover',
+          )}
+        />
+      ) : (
+        <Media
+          resource={resource || undefined}
+          imgClassName={cn(
+            imgClassName,
+            layout === 'card' && 'rounded-lg',
+            layout === 'inline' && 'mx-auto',
+            layout === 'fullwidth' && 'w-full h-auto',
+            layout === 'hero' && 'object-cover',
+          )}
+          videoClassName={cn(
+            videoClassName,
+            layout === 'fullwidth' && 'w-full h-auto',
+            layout === 'hero' && 'w-full h-full object-cover',
+          )}
+          fill={layout === 'hero'}
+          priority={layout === 'hero'}
+        />
+      )}
 
-      {/* Captions: prefer custom block caption when enabled; fall back to media resource caption */}
       {((props as any)?.showCaption && (props as any)?.caption) ||
       (sourceType === 'upload' && resource && resource.caption) ? (
         <figcaption
@@ -91,7 +99,6 @@ export const MediaBlock: React.FC<MediaBlockProps & ExtraUIProps> = (props) => {
     </figure>
   )
 
-  // Optionally wrap with container/gutter
   return (
     <div className={outerClasses}>
       {disableInnerContainer ? (

@@ -47,7 +47,8 @@ export const RenderBlocks: React.FC<{
               if (blockType === 'mediaBlock') {
                 const mediaBlock = block as any
                 const layout = mediaBlock.layout || 'card'
-
+                // MediaBlock handles both upload and embed logic internally,
+                // passing embedUrl and sourceType as props.
                 return (
                   <div className="my-16" key={index}>
                     <MediaBlock
