@@ -6,6 +6,10 @@ import {
   ParagraphFeature,
   lexicalEditor,
   UnderlineFeature,
+  OrderedListFeature,
+  UnorderedListFeature,
+  FixedToolbarFeature,
+  InlineToolbarFeature,
   type LinkFields,
 } from '@payloadcms/richtext-lexical'
 
@@ -15,6 +19,12 @@ export const defaultLexical = lexicalEditor({
     UnderlineFeature(),
     BoldFeature(),
     ItalicFeature(),
+    // Lists
+    UnorderedListFeature(),
+    OrderedListFeature(),
+    // Toolbars (show list buttons)
+    FixedToolbarFeature(),
+    InlineToolbarFeature(),
     LinkFeature({
       enabledCollections: ['pages', 'posts'],
       fields: ({ defaultFields }) => {
@@ -35,7 +45,7 @@ export const defaultLexical = lexicalEditor({
             required: true,
             validate: ((value, options) => {
               if ((options?.siblingData as LinkFields)?.linkType === 'internal') {
-                return true // no validation needed, as no url should exist for internal links
+                return true
               }
               return value ? true : 'URL is required'
             }) as TextFieldSingleValidation,
