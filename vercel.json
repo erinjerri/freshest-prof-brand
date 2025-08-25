@@ -1,0 +1,13 @@
+{
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [{ "src": "/(.*)", "dest": "/" }],
+  "redirects": [{ "source": "/old-path", "destination": "/new-path", "permanent": true }],
+  "env": {
+    "NODE_ENV": "production"
+  }
+}
