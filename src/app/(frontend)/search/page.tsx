@@ -8,6 +8,9 @@ import { Search } from '@/search/Component'
 import { Category, Post } from '@/payload-types'
 import { CardPostData } from '@/custom-payload-types'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 type Args = {
   searchParams: Promise<{
     q: string
