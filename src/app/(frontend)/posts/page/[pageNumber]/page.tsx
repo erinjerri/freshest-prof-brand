@@ -8,8 +8,8 @@ import React from 'react'
 import PageClient from './page.client'
 import { mapPostToCard } from '@utils/mapPostToCard' // Updated import path
 import type { CardPostData } from '@/custom-payload-types'
-export const dynamic = 'force-static'
-export const revalidate = 600
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 export default async function Page() {
   const payload = await getPayload({ config: configPromise })
