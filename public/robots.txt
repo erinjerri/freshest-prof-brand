@@ -3,9 +3,9 @@ User-agent: *
 Disallow: /admin/*
 
 # Host
-Host: http://localhost:3000
+Host: https://exklbyuqyzcfcxystxtu.supabase.co
 
 # Sitemaps
-Sitemap: http://localhost:3000/sitemap.xml
-Sitemap: http://localhost:3000/pages-sitemap.xml
-Sitemap: http://localhost:3000/posts-sitemap.xml
+Sitemap: https://exklbyuqyzcfcxystxtu.supabase.co/sitemap.xml
+Sitemap: https://exklbyuqyzcfcxystxtu.supabase.co/pages-sitemap.xml
+Sitemap: https://exklbyuqyzcfcxystxtu.supabase.co/posts-sitemap.xml
