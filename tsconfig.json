@@ -37,7 +37,7 @@
     "next-env.d.ts",
     "next.config.js",
     "next-sitemap.config.cjs",
-    "src/payload-types.ts",
+    "src/payload-types.ts", "tests/test-db.cjs",
   ],
   "exclude": ["node_modules", ".next"]
 }

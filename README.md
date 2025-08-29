@@ -300,6 +300,7 @@ export default buildConfig({
   db: vercelPostgresAdapter({
     pool: {
       connectionString: process.env.POSTGRES_URL || '',
+      ssl: { rejectUnAuthorized: false },
     },
   }),
   // ...

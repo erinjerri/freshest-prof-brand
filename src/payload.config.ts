@@ -25,6 +25,22 @@ const serverURL =
   process.env.VERCEL_URL ||
   'http://localhost:3000'
 
+// 🔐 Extracted SSL logic for Postgres
+const resolvedSSL = (() => {
+  const mode = (process.env.PGSSLMODE || '').toLowerCase()
+  if (mode === 'no-verify') return { rejectUnauthorized: false }
+
+  try {
+    const q = (process.env.DATABASE_URL || '').split('?')[1]
+    const m = q ? new URLSearchParams(q).get('sslmode')?.toLowerCase() : undefined
+    if (m === 'no-verify') return { rejectUnauthorized: false }
+  } catch {}
+
+  if (process.env.PGSSL_CA) return { ca: process.env.PGSSL_CA, rejectUnauthorized: true }
+
+  return { rejectUnauthorized: false }
+})()
+
 export default buildConfig({
   serverURL,
 
@@ -51,8 +67,9 @@ export default buildConfig({
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URL || '',
-      ssl: process.env.PGSSLMODE === 'no-verify' ? { rejectUnauthorized: false } : undefined,
+      ssl: resolvedSSL,
     },
+    push: false, // Change to false to avoid auto-migrations in production
   }),
 
   collections: [
@@ -69,17 +86,15 @@ export default buildConfig({
     Users,
   ],
 
-  cors: [serverURL].filter(Boolean),
-
   globals: [Header, Footer],
+
+  cors: [serverURL].filter(Boolean),
 
   plugins: [
     ...plugins,
     s3Storage({
       collections: {
-        [Media.slug]: {
-          clientUploads: true,
-        },
+        [Media.slug]: {}, // removed clientUploads
       },
       bucket: process.env.S3_BUCKET as string,
       config: {
@@ -111,5 +126,46 @@ export default buildConfig({
       },
     },
     tasks: [],
+  },
+
+  onInit: async (payload) => {
+    try {
+      const dbURL = process.env.DATABASE_URL || ''
+      let dbHost = 'unset'
+      let sslFromUrl: string | undefined
+      try {
+        if (dbURL.includes('@')) {
+          const hostMatch = dbURL.split('@')[1]?.split(/[/:?]/)[0]
+          dbHost = hostMatch || 'unknown'
+        }
+        const q = dbURL.split('?')[1]
+        if (q) sslFromUrl = new URLSearchParams(q).get('sslmode') || undefined
+      } catch {}
+
+      payload.logger.info(
+        `[payload] init vercelEnv=${process.env.VERCEL_ENV || 'local'} hasDbUrl=${Boolean(
+          dbURL,
+        )} dbHost=${dbHost} sslFromEnv=${process.env.PGSSLMODE || 'unset'} sslFromUrl=${
+          sslFromUrl || 'unset'
+        }`,
+      )
+
+      payload.logger.info(`[payload] resolvedSSL=${JSON.stringify(resolvedSSL)}`)
+
+      try {
+        await payload.find({
+          collection: 'pages',
+          limit: 1,
+          depth: 0,
+          overrideAccess: true,
+          pagination: false,
+        })
+        payload.logger.info('[payload] DB connectivity: OK')
+      } catch (err) {
+        payload.logger.error('[payload] DB connectivity failed', err as Error)
+      }
+    } catch (e) {
+      console.error('[payload] init diagnostics error', e)
+    }
   },
 })
