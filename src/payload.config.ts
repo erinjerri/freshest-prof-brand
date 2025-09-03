@@ -25,19 +25,29 @@ const serverURL =
   process.env.VERCEL_URL ||
   'http://localhost:3000'
 
-// 🔐 Extracted SSL logic for Postgres
+// 🔐 Environment-aware SSL resolution
 const resolvedSSL = (() => {
   const mode = (process.env.PGSSLMODE || '').toLowerCase()
-  if (mode === 'no-verify') return { rejectUnauthorized: false }
+  if (mode === 'no-verify') {
+    console.log('[payload] SSL: PGSSLMODE=no-verify → rejectUnauthorized=false')
+    return { rejectUnauthorized: false }
+  }
 
   try {
     const q = (process.env.DATABASE_URL || '').split('?')[1]
     const m = q ? new URLSearchParams(q).get('sslmode')?.toLowerCase() : undefined
-    if (m === 'no-verify') return { rejectUnauthorized: false }
+    if (m === 'no-verify') {
+      console.log('[payload] SSL: sslmode=no-verify in DATABASE_URL → rejectUnauthorized=false')
+      return { rejectUnauthorized: false }
+    }
   } catch {}
 
-  if (process.env.PGSSL_CA) return { ca: process.env.PGSSL_CA, rejectUnauthorized: true }
+  if (process.env.PGSSL_CA) {
+    console.log('[payload] SSL: PGSSL_CA provided → using CA cert')
+    return { ca: process.env.PGSSL_CA, rejectUnauthorized: true }
+  }
 
+  console.log('[payload] SSL: default fallback → rejectUnauthorized=false')
   return { rejectUnauthorized: false }
 })()
 
@@ -69,7 +79,7 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URL || '',
       ssl: resolvedSSL,
     },
-    push: false, // Change to false to avoid auto-migrations in production
+    push: false,
   }),
 
   collections: [
@@ -94,7 +104,7 @@ export default buildConfig({
     ...plugins,
     s3Storage({
       collections: {
-        [Media.slug]: {}, // removed clientUploads
+        [Media.slug]: {},
       },
       bucket: process.env.S3_BUCKET as string,
       config: {
