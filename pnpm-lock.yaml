@@ -156,6 +156,9 @@ importers:
       cross-env:
         specifier: ^7.0.3
         version: 7.0.3
+      cross-spawn:
+        specifier: ^7.0.3
+        version: 7.0.6
       eslint:
         specifier: ^9.16.0
         version: 9.34.0(jiti@1.21.7)

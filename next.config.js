@@ -8,19 +8,23 @@ const NEXT_PUBLIC_SERVER_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
 const nextConfig = {
   images: {
     remotePatterns: [
+      // Production/Server URL patterns
       ...[NEXT_PUBLIC_SERVER_URL].filter(Boolean).map((item) => {
         const url = new URL(item)
         return {
           hostname: url.hostname,
           protocol: url.protocol.replace(':', ''),
+          pathname: '/api/media/file/**',
         }
       }),
+      // Local development
       {
         protocol: 'http',
         hostname: 'localhost',
         port: '3000',
         pathname: '/api/media/file/**',
       },
+      // Supabase storage patterns
       ...[
         (() => {
           try {
@@ -41,6 +45,17 @@ const nextConfig = {
           hostname,
           pathname: '/storage/v1/object/public/**',
         })),
+      // Fallback patterns
+      {
+        protocol: 'https',
+        hostname: '**.vercel.app',
+        pathname: '/api/media/file/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.supabase.co',
+        pathname: '/storage/v1/object/public/**',
+      },
     ],
     unoptimized: process.env.NODE_ENV === 'development',
   },
