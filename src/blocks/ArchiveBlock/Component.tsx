@@ -39,7 +39,7 @@ export const ArchiveBlock: React.FC<ArchiveBlockProps & { id?: string }> = (prop
           // Build query with server-side filtering when categories are selected
           const params = new URLSearchParams()
           params.set('sort', '-publishedAt')
-          params.set('depth', '1')
+          params.set('depth', '3')
 
           if (selectedCategoryIds && selectedCategoryIds.length > 0) {
             // Ask backend to return all matching docs to avoid client-side page truncation
@@ -52,9 +52,12 @@ export const ArchiveBlock: React.FC<ArchiveBlockProps & { id?: string }> = (prop
             params.set('limit', String(pageSize))
           }
 
-          const res = await fetch(`/api/posts?${params.toString()}`, {
-            signal: controller.signal,
-          })
+          const res = await fetch(
+            `/api/posts?${params.toString()}&where[_status][equals]=published`,
+            {
+              signal: controller.signal,
+            },
+          )
           if (!res.ok) return
           const data = await res.json()
           const docs: Post[] = Array.isArray(data?.docs) ? data.docs : []

@@ -11,9 +11,23 @@ import { getClientSideURL } from '@/utilities/getURL'
 export const getMediaUrl = (url: string | null | undefined, cacheTag?: string | null): string => {
   if (!url) return ''
 
-  // If the URL already has http:// or https:// protocol, use it directly.
-  // This covers both direct S3 URLs (if stored that way) AND Payload's local proxy URLs (e.g., http://localhost:3000/api/media/file/...)
+  // If the URL already has http:// or https:// protocol, use it directly,
+  // but rewrite Supabase-hosted Payload proxy paths to the current origin.
+  // Some media docs may contain e.g. https://<project>.supabase.co/api/media/file/filename
+  // which must be served by our own app at /api/media/file/*, not Supabase.
   if (url.startsWith('http://') || url.startsWith('https://')) {
+    try {
+      const parsed = new URL(url)
+      const isSupabase = /\.supabase\.co$/i.test(parsed.hostname)
+      const isPayloadProxy = parsed.pathname.startsWith('/api/media/file/')
+      if (isSupabase && isPayloadProxy) {
+        const base = getClientSideURL()
+        const rewritten = `${base}${parsed.pathname}`
+        return cacheTag ? `${rewritten}?${cacheTag}` : rewritten
+      }
+    } catch {
+      // fall through to return original URL
+    }
     return cacheTag ? `${url}?${cacheTag}` : url
   }
 

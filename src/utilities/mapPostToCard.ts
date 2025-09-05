@@ -8,14 +8,27 @@ export function mapPostToCard(post: Post): CardPostData {
           typeof cat === 'number' || (typeof cat === 'object' && cat !== null && 'id' in cat),
       )
     : null
-  const image =
-    post.heroImage && typeof post.heroImage === 'object' && post.heroImage !== null
-      ? {
-          ...post.heroImage,
-          url: post.heroImage.url ?? '',
-          alt: post.heroImage.alt ?? post.title ?? '',
-        }
+
+  // Prefer meta.image; fall back to heroImage
+  const metaImage =
+    post.meta && typeof post.meta.image === 'object' && post.meta.image !== null
+      ? (post.meta.image as Media)
       : null
+  const heroImage =
+    post.heroImage && typeof post.heroImage === 'object' && post.heroImage !== null
+      ? (post.heroImage as Media)
+      : null
+
+  const chosen: Media | null = metaImage ?? heroImage
+
+  const image = chosen
+    ? {
+        ...chosen,
+        url: chosen.url ?? (chosen.filename ? `/api/media/file/${chosen.filename}` : ''),
+        alt: chosen.alt ?? post.title ?? '',
+      }
+    : null
+
   return {
     id: typeof post.id === 'string' ? post.id : String(post.id ?? ''),
     title: post.title ?? '',

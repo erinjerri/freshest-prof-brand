@@ -45,6 +45,12 @@ const nextConfig = {
           hostname,
           pathname: '/storage/v1/object/public/**',
         })),
+      // Supabase API proxy used by Payload storage adapter (e.g., /api/media/file/**)
+      {
+        protocol: 'https',
+        hostname: '**.supabase.co',
+        pathname: '/api/media/file/**',
+      },
       // Fallback patterns
       {
         protocol: 'https',

@@ -83,19 +83,7 @@ export default buildConfig({
     push: false,
   }),
 
-  collections: [
-    Pages,
-    Posts,
-    {
-      ...Media,
-      upload:
-        Media.upload && typeof Media.upload === 'object'
-          ? { ...Media.upload, staticDir: 'media' }
-          : { staticDir: 'media' },
-    },
-    Categories,
-    Users,
-  ],
+  collections: [Pages, Posts, Media, Categories, Users],
 
   globals: [Header, Footer],
 
@@ -105,7 +93,13 @@ export default buildConfig({
     ...plugins,
     s3Storage({
       collections: {
-        [Media.slug]: {},
+        [Media.slug]: {
+          generateURL: ({ filename }) => {
+            // For Supabase storage, construct the public URL
+            const baseUrl = process.env.S3_ENDPOINT?.replace('/s3', '') || ''
+            return `${baseUrl}/object/public/${process.env.S3_BUCKET}/${filename}`
+          },
+        },
       },
       bucket: process.env.S3_BUCKET as string,
       config: {

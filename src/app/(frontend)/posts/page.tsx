@@ -18,9 +18,10 @@ export default async function Page() {
 
   const posts = await payload.find({
     collection: 'posts',
-    depth: 1,
+    depth: 3,
     limit: 12,
     overrideAccess: false,
+    where: { _status: { equals: 'published' } },
     select: {
       title: true,
       slug: true,
