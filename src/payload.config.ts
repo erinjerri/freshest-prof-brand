@@ -54,6 +54,11 @@ const resolvedSSL = (() => {
 export default buildConfig({
   serverURL,
 
+  routes: {
+    admin: '/admin',
+    api: '/api/payload',
+  },
+
   admin: {
     components: {
       beforeLogin: ['@/components/BeforeLogin'],
@@ -80,14 +85,20 @@ export default buildConfig({
       ssl: resolvedSSL,
       connectionTimeoutMillis: 5000,
     },
-    push: false,
+    // Enable schema push in development to auto-sync DB when fields change
+    push: process.env.NODE_ENV !== 'production',
   }),
 
   collections: [Pages, Posts, Media, Categories, Users],
 
   globals: [Header, Footer],
 
-  cors: [serverURL].filter(Boolean),
+  cors: [serverURL, 'http://localhost:3000', 'http://127.0.0.1:3000', 'http://0.0.0.0:3000'].filter(
+    Boolean,
+  ),
+  csrf: [serverURL, 'http://localhost:3000', 'http://127.0.0.1:3000', 'http://0.0.0.0:3000'].filter(
+    Boolean,
+  ),
 
   plugins: [
     ...plugins,
