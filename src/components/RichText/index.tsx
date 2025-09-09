@@ -1,19 +1,18 @@
 'use client'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
-import {
+import type {
   DefaultNodeTypes,
   SerializedBlockNode,
   SerializedLinkNode,
-  type DefaultTypedEditorState,
+  DefaultTypedEditorState,
 } from '@payloadcms/richtext-lexical'
-import {
-  JSXConvertersFunction,
-  LinkJSXConverter,
-  RichText as ConvertRichText,
-} from '@payloadcms/richtext-lexical/react'
+import { LinkJSXConverter, RichText as ConvertRichText } from '@payloadcms/richtext-lexical/react'
+import type { JSXConvertersFunction } from '@payloadcms/richtext-lexical/react'
 
-import { CodeBlock, CodeBlockProps } from '@/blocks/Code/Component'
-import { CaptionBlock, CaptionBlockProps } from '@/blocks/Caption/Component'
+import { CodeBlock } from '@/blocks/Code/Component'
+import type { CodeBlockProps } from '@/blocks/Code/Component'
+import { CaptionBlock } from '@/blocks/Caption/Component'
+import type { CaptionBlockProps } from '@/blocks/Caption/Component'
 
 import type {
   BannerBlock as BannerBlockProps,

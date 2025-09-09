@@ -5,8 +5,8 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import React from 'react'
 import { Search } from '@/search/Component'
-import { Category, Post } from '@/payload-types'
-import { CardPostData } from '@/custom-payload-types'
+import type { Category, Post } from '@/payload-types'
+import type { CardPostData } from '@/custom-payload-types'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0

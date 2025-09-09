@@ -1,20 +1,23 @@
-export const formatDateTime = (timestamp: string): string => {
-  const now = new Date()
-  let date = now
-  if (timestamp) date = new Date(timestamp)
-  const months = date.getMonth()
-  const days = date.getDate()
-  // const hours = date.getHours();
-  // const minutes = date.getMinutes();
-  // const seconds = date.getSeconds();
+export const formatDateTime = (timestamp?: string | number | Date | null): string => {
+  let date: Date | null = null
+  if (timestamp instanceof Date) {
+    date = timestamp
+  } else if (timestamp !== undefined && timestamp !== null && timestamp !== '') {
+    const parsed = new Date(timestamp)
+    if (!Number.isNaN(parsed.getTime())) {
+      date = parsed
+    }
+  }
 
-  const MM = months + 1 < 10 ? `0${months + 1}` : months + 1
-  const DD = days < 10 ? `0${days}` : days
-  const YYYY = date.getFullYear()
-  // const AMPM = hours < 12 ? 'AM' : 'PM';
-  // const HH = hours > 12 ? hours - 12 : hours;
-  // const MinMin = (minutes < 10) ? `0${minutes}` : minutes;
-  // const SS = (seconds < 10) ? `0${seconds}` : seconds;
+  if (!date) return ''
+
+  const month = date.getMonth()
+  const day = date.getDate()
+  const year = date.getFullYear()
+
+  const MM = month + 1 < 10 ? `0${month + 1}` : month + 1
+  const DD = day < 10 ? `0${day}` : day
+  const YYYY = year
 
   return `${MM}/${DD}/${YYYY}`
 }
