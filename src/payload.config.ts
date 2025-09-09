@@ -25,6 +25,15 @@ const serverURL =
   process.env.VERCEL_URL ||
   'http://localhost:3000'
 
+// Allow common dev origins and ports to prevent CORS/CSRF issues when Next picks a different port
+const devPorts = [3000, 3001, 3002, 3003, 3004, 3005]
+const devOrigins = devPorts.flatMap((port) => [
+  `http://localhost:${port}`,
+  `http://127.0.0.1:${port}`,
+  `http://0.0.0.0:${port}`,
+  `http://[::1]:${port}`,
+])
+
 // 🔐 Environment-aware SSL resolution
 const resolvedSSL = (() => {
   const mode = (process.env.PGSSLMODE || '').toLowerCase()
@@ -88,12 +97,8 @@ export default buildConfig({
 
   globals: [Header, Footer],
 
-  cors: [serverURL, 'http://localhost:3000', 'http://127.0.0.1:3000', 'http://0.0.0.0:3000'].filter(
-    Boolean,
-  ),
-  csrf: [serverURL, 'http://localhost:3000', 'http://127.0.0.1:3000', 'http://0.0.0.0:3000'].filter(
-    Boolean,
-  ),
+  cors: [serverURL, ...devOrigins].filter(Boolean),
+  csrf: [serverURL, ...devOrigins].filter(Boolean),
 
   plugins: [
     ...plugins,

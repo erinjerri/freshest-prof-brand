@@ -8,7 +8,8 @@ export const getServerSideURL = (): string => {
 
   // In development, default to localhost
   if (process.env.NODE_ENV === 'development') {
-    return process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
+    const port = process.env.PORT || '3000'
+    return process.env.NEXT_PUBLIC_SERVER_URL || `http://localhost:${port}`
   }
 
   // Fallback for Vercel deployment
