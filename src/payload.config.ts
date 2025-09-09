@@ -54,11 +54,6 @@ const resolvedSSL = (() => {
 export default buildConfig({
   serverURL,
 
-  routes: {
-    admin: '/admin',
-    api: '/api/payload',
-  },
-
   admin: {
     components: {
       beforeLogin: ['@/components/BeforeLogin'],
