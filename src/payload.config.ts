@@ -96,6 +96,7 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URL || '',
       ssl: { rejectUnauthorized: false, checkServerIdentity: () => undefined },
+      channelBinding: 'disable',
       connectionTimeoutMillis: 5000,
     },
     // Enable schema push in development to auto-sync DB when fields change
