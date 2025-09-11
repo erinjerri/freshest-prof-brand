@@ -21,6 +21,10 @@ import { getServerSideURL } from './utilities/getURL'
 // This applies process-wide and should be replaced with a proper CA when possible.
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = process.env.NODE_TLS_REJECT_UNAUTHORIZED || '0'
 
+// Work around proxies/poolers that break SCRAM channel binding,
+// which triggers: "SASL: SCRAM-SERVER-FINAL-MESSAGE: server signature is missing"
+process.env.PGCHANNELBINDING = process.env.PGCHANNELBINDING || 'disable'
+
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
