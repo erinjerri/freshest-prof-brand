@@ -6,9 +6,11 @@
   "type": "module",
   "scripts": {
     "build": "cross-env NODE_OPTIONS=--no-deprecation next build",
-    "postbuild": "next-sitemap --config next-sitemap.config.cjs",
+    "postbuild": "timeout 30s next-sitemap --config next-sitemap.config.cjs || echo 'Sitemap generation timed out, continuing...'",
+    "build:no-sitemap": "cross-env NODE_OPTIONS=--no-deprecation next build && echo 'Build completed without sitemap'",
+    "build:safe": "cross-env NODE_OPTIONS=--no-deprecation CI=false next build",
     "dev": "cross-env NEXT_DISABLE_TURBOPACK=1 NODE_OPTIONS=--no-deprecation pnpm exec next dev",
-    "dev:prod": "cross-env NODE_OPTIONS=--no-deprecation rm -rf .next && pnpm build && pnpm start",
+    "dev:prod": "cross-env NODE_OPTIONS=--no-deprecation rm -rf .next && pnpm build:safe && pnpm start",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation PAYLOAD_CONFIG_PATH=./src/payload.config.ts payload generate:types",
     "ii": "cross-env NODE_OPTIONS=--no-deprecation pnpm --ignore-workspace install",
@@ -22,9 +24,10 @@
     "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts",
     "typecheck": "tsc --noEmit",
     "migrate": "cross-env NODE_OPTIONS=--no-deprecation payload migrate",
-    "deploy": "vercel --prod --build-env CI=false",
-    "deploy:preview": "vercel --prebuilt --build-env CI=false",
-    "build:ignore-warnings": "cross-env NODE_OPTIONS=--no-deprecation CI=false next build"
+    "migrate:create": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:create",
+    "deploy": "vercel --prod",
+    "deploy:preview": "vercel",
+    "vercel-build": "cross-env NODE_OPTIONS=--no-deprecation CI=false next build && timeout 20s next-sitemap --config next-sitemap.config.cjs || echo 'Sitemap skipped on Vercel'"
   },
   "dependencies": {
     "@img/sharp-darwin-arm64": "0.34.2",
@@ -84,6 +87,7 @@
     "cross-spawn": "^7.0.3",
     "eslint": "^9.16.0",
     "eslint-config-next": "15.3.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
     "jsdom": "26.1.0",
     "node-addon-api": "^8.5.0",
     "node-gyp": "^11.4.2",
