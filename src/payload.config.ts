@@ -91,7 +91,7 @@ export default buildConfig({
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URL || '',
-      ssl: { rejectUnauthorized: false },
+      ssl: { rejectUnauthorized: false, checkServerIdentity: () => undefined },
       connectionTimeoutMillis: 5000,
     },
     // Enable schema push in development to auto-sync DB when fields change
