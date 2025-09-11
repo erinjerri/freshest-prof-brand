@@ -16,6 +16,11 @@ import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
 
+// As a last-resort workaround for self-signed DB certs in serverless
+// environments (e.g., Vercel), force Node to accept unauthorized certs.
+// This applies process-wide and should be replaced with a proper CA when possible.
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = process.env.NODE_TLS_REJECT_UNAUTHORIZED || '0'
+
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
