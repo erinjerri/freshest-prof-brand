@@ -20,7 +20,6 @@ export const revalidate = 0
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
-
   const headerData: Header = await getCachedGlobal('header', 1)()
   const footerData: Footer = await getCachedGlobal('footer', 1)()
 
@@ -30,6 +29,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <InitTheme />
         <link href="/favicon.ico" rel="icon" sizes="32x32" />
         <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
+        <link href="/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body>
         <Providers>
@@ -43,7 +44,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           >
             <HeaderClient data={headerData} />
           </Suspense>
-          {children}
+          <main>{children}</main>
           <Suspense
             fallback={
               <div className="bg-muted text-muted-foreground p-4 text-center">
@@ -60,10 +61,88 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 }
 
 export const metadata: Metadata = {
+  title: {
+    template: '%s | Erin Jerri - Professional Brand',
+    default: 'Erin Jerri - Professional Brand Portfolio',
+  },
+  description:
+    'Professional brand portfolio website showcasing expertise in technology, design, and innovation. Discover my journey, projects, and professional achievements.',
+  keywords: [
+    'Erin Jerri',
+    'Professional Brand',
+    'Portfolio',
+    'Technology',
+    'Design',
+    'Innovation',
+    'Web Development',
+    'Professional Services',
+  ],
+  authors: [{ name: 'Erin Jerri' }],
+  creator: 'Erin Jerri',
+  publisher: 'Erin Jerri',
   metadataBase: new URL(getServerSideURL()),
-  openGraph: mergeOpenGraph(),
+  alternates: {
+    canonical: getServerSideURL(),
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: getServerSideURL(),
+    siteName: 'Erin Jerri - Professional Brand',
+    title: 'Erin Jerri - Professional Brand Portfolio',
+    description:
+      'Professional brand portfolio website showcasing expertise in technology, design, and innovation.',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Erin Jerri - Professional Brand Portfolio',
+        type: 'image/jpeg',
+      },
+      {
+        url: '/og-image-square.jpg',
+        width: 1200,
+        height: 1200,
+        alt: 'Erin Jerri - Professional Brand',
+        type: 'image/jpeg',
+      },
+    ],
+    ...mergeOpenGraph(), // This will merge any additional OpenGraph data from your utility
+  },
   twitter: {
     card: 'summary_large_image',
-    creator: '@payloadcms',
+    title: 'Erin Jerri - Professional Brand Portfolio',
+    description:
+      'Professional brand portfolio website showcasing expertise in technology, design, and innovation.',
+    creator: '@erinjerri', // Update with your actual Twitter handle
+    site: '@erinjerri', // Update with your actual Twitter handle
+    images: [
+      {
+        url: '/twitter-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Erin Jerri - Professional Brand Portfolio',
+      },
+    ],
   },
+  verification: {
+    // Add your verification IDs when you have them
+    // google: 'your-google-verification-id',
+    // other: {
+    //   'facebook-domain-verification': 'your-facebook-verification-id',
+    // },
+  },
+  category: 'technology',
 }
