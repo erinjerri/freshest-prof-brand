@@ -1,5 +1,6 @@
 import { s3Storage } from '@payloadcms/storage-s3'
 import { postgresAdapter } from '@payloadcms/db-postgres'
+import pg from 'pg'
 import sharp from 'sharp'
 import path from 'path'
 import { buildConfig, type PayloadRequest } from 'payload'
@@ -24,6 +25,10 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = process.env.NODE_TLS_REJECT_UNAUTHORI
 // Work around proxies/poolers that break SCRAM channel binding,
 // which triggers: "SASL: SCRAM-SERVER-FINAL-MESSAGE: server signature is missing"
 process.env.PGCHANNELBINDING = process.env.PGCHANNELBINDING || 'disable'
+
+// Ensure pg driver disables channel binding regardless of env var type defs
+;(pg as any).defaults = (pg as any).defaults || {}
+;(pg as any).defaults.channelBinding = (pg as any).defaults.channelBinding || 'disable'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -96,7 +101,6 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URL || '',
       ssl: { rejectUnauthorized: false, checkServerIdentity: () => undefined },
-      channelBinding: 'disable',
       connectionTimeoutMillis: 5000,
     },
     // Enable schema push in development to auto-sync DB when fields change
