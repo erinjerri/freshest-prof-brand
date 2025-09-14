@@ -4,6 +4,7 @@ import sharp from 'sharp'
 import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
+import fs from 'fs'
 
 import { Categories } from './collections/Categories'
 import { Media } from './collections/Media'
@@ -43,20 +44,93 @@ const getDatabaseConfig = () => {
   }
 
   let isSupabase = false
+  let dbHostname: string | undefined
+  let urlSSLMode: string | undefined
   try {
     const url = new URL(connectionString)
+    dbHostname = url.hostname
+    urlSSLMode = url.searchParams.get('sslmode') || undefined
     isSupabase = url.hostname.includes('supabase.co')
   } catch (e) {
     console.warn('Could not parse DATABASE_URL:', e)
   }
 
-  const sslConfig =
-    isProduction || isSupabase
-      ? {
-          rejectUnauthorized: false,
-          sslmode: 'require',
-        }
-      : false
+  // Helpers to load PEM material from env/base64/path
+  const readIfExists = (p?: string) => {
+    try {
+      return p && fs.existsSync(p) ? fs.readFileSync(p, 'utf8') : undefined
+    } catch {
+      return undefined
+    }
+  }
+
+  const fromBase64 = (v?: string) => {
+    try {
+      return v ? Buffer.from(v, 'base64').toString('utf8') : undefined
+    } catch {
+      return undefined
+    }
+  }
+
+  const caPEM =
+    process.env.PG_CA_CERT ||
+    fromBase64(process.env.PG_CA_CERT_BASE64) ||
+    readIfExists(process.env.PG_CA_CERT_PATH) ||
+    readIfExists(process.env.PGSSLROOTCERT)
+
+  const certPEM =
+    process.env.PG_SSL_CERT ||
+    fromBase64(process.env.PG_SSL_CERT_BASE64) ||
+    readIfExists(process.env.PG_SSL_CERT_PATH) ||
+    readIfExists(process.env.PGSSLCERT)
+
+  const keyPEM =
+    process.env.PG_SSL_KEY ||
+    fromBase64(process.env.PG_SSL_KEY_BASE64) ||
+    readIfExists(process.env.PG_SSL_KEY_PATH) ||
+    readIfExists(process.env.PGSSLKEY)
+
+  // Decide SSL behavior
+  const envSSLMode = process.env.PGSSLMODE // e.g. 'require' | 'verify-ca' | 'verify-full' | 'no-verify' | 'disable'
+  const effectiveSSLMode =
+    envSSLMode || urlSSLMode || (isProduction || isSupabase ? 'require' : undefined)
+
+  let sslConfig:
+    | false
+    | {
+        rejectUnauthorized?: boolean
+        ca?: string
+        cert?: string
+        key?: string
+        servername?: string
+      }
+
+  if (effectiveSSLMode === 'disable') {
+    sslConfig = false
+  } else {
+    const shouldVerify =
+      effectiveSSLMode === 'verify-ca' ||
+      effectiveSSLMode === 'verify-full' ||
+      effectiveSSLMode === 'require'
+    sslConfig = {
+      rejectUnauthorized: shouldVerify,
+      ca: caPEM || undefined,
+      cert: certPEM || undefined,
+      key: keyPEM || undefined,
+      servername: dbHostname || undefined,
+    }
+
+    // When explicitly opting out of verification
+    if (effectiveSSLMode === 'no-verify') {
+      sslConfig.rejectUnauthorized = false
+    }
+
+    // Back-compat: if we’re in prod/Supabase with no cert provided and no explicit mode,
+    // maintain previous permissive behavior to avoid breaking local setups
+    if (!caPEM && !certPEM && !keyPEM && !envSSLMode && (isProduction || isSupabase)) {
+      sslConfig.rejectUnauthorized = false
+    }
+  }
 
   return {
     connectionString,
