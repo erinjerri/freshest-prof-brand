@@ -72,19 +72,23 @@ const getDatabaseConfig = () => {
     }
   }
 
+  // Multiple ways to provide certificates - environment variables with different formats
   const caPEM =
+    process.env.SUPABASE_SSL_ROOT_CERT ||
     process.env.PG_CA_CERT ||
     fromBase64(process.env.PG_CA_CERT_BASE64) ||
     readIfExists(process.env.PG_CA_CERT_PATH) ||
     readIfExists(process.env.PGSSLROOTCERT)
 
   const certPEM =
+    process.env.SUPABASE_SSL_CERT ||
     process.env.PG_SSL_CERT ||
     fromBase64(process.env.PG_SSL_CERT_BASE64) ||
     readIfExists(process.env.PG_SSL_CERT_PATH) ||
     readIfExists(process.env.PGSSLCERT)
 
   const keyPEM =
+    process.env.SUPABASE_SSL_KEY ||
     process.env.PG_SSL_KEY ||
     fromBase64(process.env.PG_SSL_KEY_BASE64) ||
     readIfExists(process.env.PG_SSL_KEY_PATH) ||
@@ -112,6 +116,7 @@ const getDatabaseConfig = () => {
       effectiveSSLMode === 'verify-ca' ||
       effectiveSSLMode === 'verify-full' ||
       effectiveSSLMode === 'require'
+
     sslConfig = {
       rejectUnauthorized: shouldVerify,
       ca: caPEM || undefined,
@@ -125,11 +130,19 @@ const getDatabaseConfig = () => {
       sslConfig.rejectUnauthorized = false
     }
 
-    // Back-compat: if we’re in prod/Supabase with no cert provided and no explicit mode,
-    // maintain previous permissive behavior to avoid breaking local setups
-    if (!caPEM && !certPEM && !keyPEM && !envSSLMode && (isProduction || isSupabase)) {
+    // If we have proper certificates, we can verify
+    if (caPEM || certPEM) {
+      sslConfig.rejectUnauthorized = true
+    } else if (!envSSLMode && (isProduction || isSupabase)) {
+      // Back-compat: if we're in prod/Supabase with no cert provided and no explicit mode,
+      // maintain previous permissive behavior to avoid breaking local setups
       sslConfig.rejectUnauthorized = false
     }
+  }
+
+  sslConfig = {
+    rejectUnauthorized: true,
+    ca: process.env.PG_SSL_CERT,
   }
 
   return {
@@ -290,6 +303,16 @@ export default buildConfig({
 
       payload.logger.info(`[payload] Database Host: ${dbHost}`)
       payload.logger.info(`[payload] SSL Mode: ${dbSSLMode}`)
+
+      // Log SSL certificate status
+      const hasCACert = Boolean(process.env.SUPABASE_SSL_ROOT_CERT || process.env.PG_CA_CERT)
+      const hasClientCert = Boolean(process.env.SUPABASE_SSL_CERT || process.env.PG_SSL_CERT)
+      payload.logger.info(
+        `[payload] SSL CA Certificate: ${hasCACert ? 'Provided' : 'Not provided'}`,
+      )
+      payload.logger.info(
+        `[payload] SSL Client Certificate: ${hasClientCert ? 'Provided' : 'Not provided'}`,
+      )
 
       try {
         const testQuery = await payload.find({
