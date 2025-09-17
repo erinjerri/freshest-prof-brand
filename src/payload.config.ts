@@ -140,10 +140,7 @@ const getDatabaseConfig = () => {
     }
   }
 
-  sslConfig = {
-    rejectUnauthorized: true,
-    ca: process.env.PG_SSL_CERT,
-  }
+  console.warn('WHEEE', sslConfig)
 
   return {
     connectionString,
